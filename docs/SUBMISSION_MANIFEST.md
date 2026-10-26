@@ -17,6 +17,6 @@
 | Final presentation | `presentation/EGN321_Final_Capstone.pptx`, 8 slides and `docs/PRESENTATION_SCRIPT.md` |
 | Live code challenge | `docs/CODE_DEFENSE_PRACTICE.md`; instructor assessment still requires in-person execution without AI |
 | Local unit tests | 14 passed, 1 Flask test module skipped: Flask unavailable in this offline sandbox |
-| CI/integrated tests | `.github/workflows/tests.yml` authored; **not claimed passed** until published and run on GitHub Actions |
+| CI/integrated tests | `.github/workflows/tests.yml` **passed**; [verified workflow run 40251363889](https://github.com/Barquito0/EGN-321-Module-8_2/actions/runs/40251363889) confirms capstone/API tests, inherited monitor tests, byte-exact original workbook and live integrated HTTP/SQLite smoke test |
 
 The capstone GitHub repository includes the byte-identical original workbook; the pinned prior application checkout is retrieved on first setup. Use a real classmate handoff before presenting 8.1 draft observations as historical fact.
