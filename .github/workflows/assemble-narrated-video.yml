@@ -1,0 +1,70 @@
+name: Assemble narrated capstone MP4
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/assemble-narrated-video.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  publish-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reconstruct and verify the original video bytes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python - <<'PY'
+          import base64
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import time
+          import urllib.request
+
+          metadata = json.loads(Path('presentation/video_blob_manifest.json').read_text())
+          dest = Path('presentation') / metadata['filename']
+          api = 'https://api.github.com/repos/Barquito0/EGN-321-Module-8_2/git/blobs/'
+          headers = {
+              'Authorization': 'Bearer ' + os.environ['GITHUB_TOKEN'],
+              'Accept': 'application/vnd.github+json',
+              'X-GitHub-Api-Version': '2022-11-28',
+              'User-Agent': 'egn321-capstone-video',
+          }
+          with dest.open('wb') as out:
+              for index, sha in enumerate(metadata['blob_shas']):
+                  request = urllib.request.Request(api + sha, headers=headers)
+                  for attempt in range(3):
+                      try:
+                          with urllib.request.urlopen(request, timeout=60) as reply:
+                              record = json.load(reply)
+                          break
+                      except Exception:
+                          if attempt == 2:
+                              raise
+                          time.sleep(attempt + 2)
+                  assert record['sha'] == sha and record['encoding'] == 'base64'
+                  raw = base64.b64decode(record['content'])
+                  out.write(raw)
+                  print(f'Assembled {index + 1}/{len(metadata["blob_shas"])} parts')
+          actual_size = dest.stat().st_size
+          digest = hashlib.sha256(dest.read_bytes()).hexdigest()
+          blob_sha = subprocess.check_output(['git', 'hash-object', str(dest)], text=True).strip()
+          assert actual_size == metadata['size'], (actual_size, metadata['size'])
+          assert digest == metadata['sha256'], (digest, metadata['sha256'])
+          assert blob_sha == metadata['git_blob_sha1'], (blob_sha, metadata['git_blob_sha1'])
+          print(f'PASS {dest}: {actual_size} bytes, SHA256 {digest}, Git SHA {blob_sha}')
+          PY
+      - name: Commit the verified MP4 to main
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add presentation/EGN321_Final_Capstone_Narrated.mp4
+          if ! git diff --cached --quiet; then
+            git commit -m 'presentation: publish full narrated capstone MP4'
+            git push
+          fi
