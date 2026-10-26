@@ -23,6 +23,29 @@ REQUIRED = ("app.py", "supervisor.py", "requirements.txt", "src/monitor.py",
 def verify_app(path: Path) -> list[str]:
     return [f for f in REQUIRED if not (path / f).is_file()]
 
+def ensure_original_seed(app: Path) -> None:
+    """Create the Module 6 archive before the inherited app imports its storage.
+
+    The capstone also has a top-level `scripts` package, which can shadow the
+    inherited app's namespace package on some launch/test paths. Running the
+    seed builder in its own interpreter with cwd=application avoids that import
+    collision. Existing seed databases and live monitoring state are untouched.
+    """
+    seed = app / "data" / "module6_sensor_history.db"
+    if seed.exists():
+        return
+    print("Rebuilding the original Module 6 SQLite archive from unmodified source CSV.")
+    try:
+        subprocess.run([sys.executable, "-m", "scripts.seed_history"],
+                       cwd=app, check=True, timeout=90)
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+        raise RuntimeError("Unable to prepare the original Module 6 SQLite archive. "
+                           "Check permissions, source CSV and available storage. "
+                           "Existing runtime history was not removed.") from exc
+    if not seed.exists():
+        raise RuntimeError("Seed builder exited successfully but SQLite history is missing")
+
+
 
 def prepare(root=ROOT, *, runner=subprocess.run) -> Path:
     root = Path(root)
@@ -32,6 +55,7 @@ def prepare(root=ROOT, *, runner=subprocess.run) -> Path:
         if missing:
             raise RuntimeError("Existing application folder is incomplete: " + ", ".join(missing)
                                + ". Do not delete it if it contains data; rename/back it up first.")
+        ensure_original_seed(app)
         print("Existing application found. No clone and no history reset performed.")
         return app
     if not shutil.which("git"):
@@ -50,6 +74,7 @@ def prepare(root=ROOT, *, runner=subprocess.run) -> Path:
     missing = verify_app(app)
     if missing:
         raise RuntimeError("Downloaded app lacks required files: " + ", ".join(missing))
+    ensure_original_seed(app)
     manifest = {"source": SOURCE_URL, "revision": SOURCE_REVISION,
                 "method": "First-run checkout; preserved on later starts"}
     (root / "application-version.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
