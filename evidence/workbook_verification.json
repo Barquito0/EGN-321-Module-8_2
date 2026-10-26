@@ -1,0 +1,49 @@
+{
+  "verified_utc": "2026-10-26T00:36:01.356448+00:00",
+  "source_of_expectations": "Module 1 source tests + DEFECTS.md (links in README)",
+  "workbook_cases": [
+    {
+      "case": "Workbook R-103",
+      "expected_gal": 448.8312,
+      "actual_gal": 448.8312,
+      "pass": true,
+      "inputs": {
+        "length_ft": 10,
+        "width_ft": 6,
+        "depth": 12,
+        "depth_unit": "in"
+      }
+    },
+    {
+      "case": "Workbook R-116",
+      "expected_gal": 822.8572,
+      "actual_gal": 822.8572,
+      "pass": true,
+      "inputs": {
+        "length_ft": 12,
+        "width_ft": 5,
+        "depth": 22,
+        "depth_unit": "in"
+      }
+    },
+    {
+      "case": "Workbook R-108 corrected source feet",
+      "expected_gal": 1122.078,
+      "actual_gal": 1122.078,
+      "pass": true,
+      "inputs": {
+        "length_ft": 10,
+        "width_ft": 6,
+        "depth": 2.5,
+        "depth_unit": "ft"
+      }
+    }
+  ],
+  "invalid_case_error": "depth_in cannot be negative",
+  "student_created_total": {
+    "run_count": 18,
+    "total_gallons": 8078.961599999997,
+    "note": "Synthetic identical-depth test runs, not original workbook aggregate"
+  },
+  "all_passed": true
+}

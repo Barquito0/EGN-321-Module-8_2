@@ -1,0 +1,6 @@
+Case,Source,Length_ft,Width_ft,Depth,Depth_unit,Expected_US_gallons,Expected_behavior
+Workbook R-103,Module 1 original workbook and tests,10,6,12,in,448.8312,Known-correct match
+Workbook R-116,Module 1 original workbook and tests,12,5,22,in,822.8572,Known-correct match (second tank size)
+Workbook R-108 corrected,Module 1 Field Notes says 2.5 ft,10,6,2.5,ft,1122.078,Explicit unit conversion prevents defect
+Invalid depth,Student-created negative-value case,10,6,-1,in,,Refuse with explanation
+Additional 18-run,Student-created uniform-depth fixture,10,6,12,in,8078.9616,Sum all provided rows (not original 18-run total)
