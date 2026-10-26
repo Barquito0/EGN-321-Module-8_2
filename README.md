@@ -158,6 +158,10 @@ Set `REPLAY_SECONDS`, `STALE_DEGRADED_SECONDS`, `STALE_FAILED_SECONDS`, `PORT`, 
 
 ## Presentation and technical defense
 
+**Narrated video:** [Watch or download the narrated final presentation (MP4)](presentation/EGN321_Final_Capstone_Narrated.mp4) — 1080p, approximately 9 minutes 48 seconds. The editable slide deck remains at [`presentation/EGN321_Final_Capstone.pptx`](presentation/EGN321_Final_Capstone.pptx).
+
+
+
 See `presentation/EGN321_Final_Capstone.pptx`, `docs/PRESENTATION_SCRIPT.md`, and `docs/LIVE_DEMO_CHECKLIST.md`. During the defense **do not use AI**. Practice the four source locations: `capstone/tank_fill.py` (formula and validation), `capstone/routes.py` (form/API), `application/src/alerting.py` (persistence/hysteresis), and `application/src/health.py` (timeouts).
 
 ## AI assistance
